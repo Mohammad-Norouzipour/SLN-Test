@@ -20,7 +20,6 @@ pub fn callInitPDA(
 ) -> ProgramResult {
     msg!("callInitPDA");
     msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
     // Get Account iterator
     let account_info_iter = &mut _accounts.iter();
     // Get accounts
@@ -32,11 +31,11 @@ pub fn callInitPDA(
         Pubkey::find_program_address(&[initializer.key.as_ref(), callee.as_bytes().as_ref()], pID);
 
     // Calculate account size required
-    let account_len: usize = 1 + (2 * pcm16.len()) + (4 + callee.len()) + (4 + description.len());
+    let account_len: usize = 1 + (2 * length) + (4 + callee.len()) + (4 + caller.len());
 
     // Calculate rent required
     let rent = Rent::get()?;
-    let rent_lamports = rent.minimum_balance(account_len);
+    let rent_lamports =     rent.minimum_balance(account_len);
 
     // Create the account
     invoke_signed(
