@@ -1,7 +1,9 @@
+pub mod call;
 pub mod instruction;
 pub mod state;
 
 use borsh::{BorshDeserialize, BorshSerialize};
+pub use call::*;
 use crate::instruction::*;
 use crate::state::*;
 use solana_program::{
@@ -29,42 +31,42 @@ pub fn process_instruction(
             callee,
             pcm16,
             description,
-        } => callInitPDA(program_id, accounts, callee, pcm16, description),
+        } => callInitPDA(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallUpdate {
             callee,
             pcm16,
             description,
-        } => callUpdate(program_id, accounts, callee, pcm16, description),
+        } => callUpdate(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallSend {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, pcm16, description),
+        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallAnswer {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, pcm16, description),
+        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallReject {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, pcm16, description),
+        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallCancel {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, pcm16, description),
+        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
     }
 }
 
 pub fn callInitPDA(
-    _program_id: &Pubkey,
+    pID: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
     pcm16: &[u16],
@@ -72,7 +74,6 @@ pub fn callInitPDA(
 ) -> ProgramResult {
     msg!("Call Started");
     msg!("Contact is : {}", callee);
-    msg!("Voice Data: {}", pcm16);
     msg!("Description: {}", description);
     // Get Account iterator
     let account_info_iter = &mut _accounts.iter();
@@ -81,10 +82,8 @@ pub fn callInitPDA(
     let pda_account = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?;
     // Derive PDA
-    let (pda, bump_seed) = Pubkey::find_program_address(
-        &[initializer.key.as_ref(), callee.as_bytes().as_ref()],
-        _program_id,
-    );
+    let (pda, bump_seed) =
+        Pubkey::find_program_address(&[initializer.key.as_ref(), callee.as_bytes().as_ref()], pID);
 
     // Calculate account size required
     let account_len: usize = 1 + (2 * pcm16.len()) + (4 + callee.len()) + (4 + description.len());
@@ -100,7 +99,7 @@ pub fn callInitPDA(
             pda_account.key,
             rent_lamports,
             account_len.try_into().unwrap(),
-            program_id,
+            pID,
         ),
         &[
             initializer.clone(),
@@ -122,7 +121,7 @@ pub fn callInitPDA(
 
     pda_data.caller = callee;
     pda_data.callee = callee;
-    pda_data.pcm16 = pcm16;
+    pda_data.pcm16 = pcm16.clone();
     pda_data.state = description;
     pda_data.is_initialized = true;
 
@@ -141,7 +140,6 @@ pub fn streamPcm16(
 ) -> ProgramResult {
     msg!("Call Started");
     msg!("Contact is : {}", callee);
-    msg!("Voice Data: {}", pcm16);
     msg!("Description: {}", description);
     Ok(())
 }
@@ -155,7 +153,6 @@ pub fn callUpdate(
 ) -> ProgramResult {
     msg!("Call Started");
     msg!("Contact is : {}", callee);
-    msg!("Voice Data: {}", pcm16);
     msg!("Description: {}", description);
     Ok(())
 }

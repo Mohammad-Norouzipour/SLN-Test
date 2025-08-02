@@ -1,39 +1,20 @@
-import { PublicKey , Keypair} from "@solana/web3.js";
-import {createAndFundAccount} from "./libs/accountClass";
+import { PublicKey, Keypair } from "@solana/web3.js";
+import { AccountClass } from "./libs/accountClass";
+import * as callClass from "./libs/callClass.ts";
+import * as eventClass from "./libs/eventClass.ts";
 
-const connection = new web3.Connection(
-  "https://api.devnet.solana.com	",
-  "confirmed"
-);
+// const connection = new web3.Connection(
+//   "https://api.devnet.solana.com	",
+//   "confirmed"
+// );
+const acManager = new AccountClass("AccountManager");
 
-const account = await createAndFundAccount(connection);
+const connection = pg.connection;
 
-const pdaInit = new web3.Transaction();
-const programAddress = new PublicKey(pg.PROGRAM_ID);
+const account = await acManager.accountCreateAndFund(connection);
 
-const seeds = [, sender.toBuffer()];
-const [pda, bump] = await PublicKey.findProgramAddressSync(
-  seeds,
-  programAddress
-);
+const pda = await acManager.accountInitPDA(connection);
 
-pdaInit.add(
-  new web3.TransactionInstruction({
-    keys: [],
-    programId: new web3.PublicKey(pg.PROGRAM_ID),
-  })
-);
-
-console.log("Forwarding Transaction");
-
-const tx_hash = await web3.sendAndConfirmTransaction(pg.connection, pdaInit, [
-  pg.wallet.keypair,
-]);
-
-console.log("sender address is " + sender.toBase58());
-console.log("base balance is ", JSON.stringify(basebalance, null, 2));
-console.log("new balance is ", JSON.stringify(newbalance, null, 2));
-
-console.log(`PDA: ${pda}`);
-console.log(`Bump: ${bump}`);
-console.log("Transaction submitted with hash: ", tx_hash);
+console.log(`PDA: ${pda.address}`);
+console.log(`Bump: ${pda.bump}`);
+console.log("Transaction submitted with hash: ", pda.tx_hash);
