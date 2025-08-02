@@ -3,6 +3,7 @@ import {
   Keypair,
   PublicKey,
   LAMPORTS_PER_SOL,
+  SystemProgram,
 } from "@solana/web3.js";
 
 export class AccountClass {
@@ -28,24 +29,42 @@ export class AccountClass {
     return newAccount;
   }
 
-  public async accountInitPDA(connection: Connection): Promise<number> {
+  public async accountInitPDA(
+    connection: Connection,
+    caller: PublicKey,
+    callee: PublicKey
+  ): Promise<number> {
+    const payer = caller;
     const trans = new web3.Transaction();
 
     const programAddress = new PublicKey(pg.PROGRAM_ID);
 
-    const seeds = [, sender.toBuffer()];
+    const seeds = [caller.toBuffer(), callee.toBuffer()];
 
     const [pda, bump] = await PublicKey.findProgramAddressSync(
       seeds,
       programAddress
     );
 
-    trans.add(
-      new web3.TransactionInstruction({
-        keys: [],
-        programId: new web3.PublicKey(pg.PROGRAM_ID),
-      })
+    const accountSpace = 8 + 2 * 8000;
+
+    // Get minimum rent exemption balance
+    const lamports = await connection.getMinimumBalanceForRentExemption(
+      accountSpace
     );
+
+    const createAccountInstruction = SystemProgram.createAccount({
+      fromPubkey: payer,
+      newAccountPubkey: pda,
+      lamports,
+      space: accountSpace,
+      programId: programAddress,
+    });
+
+    trans.add(createAccountInstruction);
+
+    // Sign and send the transaction
+    // await sendAndConfirmTransaction(connection, transaction, [payer]);
 
     console.log("Forwarding Transaction");
 

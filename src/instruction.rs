@@ -4,43 +4,40 @@ use solana_program::program_error::ProgramError;
 #[derive(BorshDeserialize, BorshSerialize)]
 pub enum CallInstruction {
     CallInit {
+        caller: String,
         callee: String,
-        pcm16: [u16; 8000],
-        description: String,
+        pda_address: String,
+        length: u16,
     },
 
     CallUpdate {
+        id: String,
         callee: String,
         pcm16: [u16; 8000],
-        description: String,
     },
 
     CallSend {
+        caller: String,
         callee: String,
-        pcm16: [u16; 8000],
-        description: String,
     },
 
     CallAnswer {
+        id: String,
+        caller: String,
         callee: String,
-        pcm16: [u16; 8000],
-        description: String,
     },
 
     CallReject {
+        id: String,
         callee: String,
-        pcm16: [u16; 8000],
-        description: String,
     },
 
     CallEnd {
-        callee: String,
-        pcm16: [u16; 8000],
-        description: String,
+        id: String,
     },
 
     CallCancel {
-        callee: String,
+        id: String,
         pcm16: [u16; 8000],
         description: String,
     },

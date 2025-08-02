@@ -3,7 +3,7 @@ pub mod instruction;
 pub mod state;
 
 use borsh::{BorshDeserialize, BorshSerialize};
-pub use call::*;
+use call::*;
 use crate::instruction::*;
 use crate::state::*;
 use solana_program::{
@@ -28,51 +28,51 @@ pub fn process_instruction(
     let ins = instruction::CallInstruction::unpack(instruction_data)?;
     match ins {
         instruction::CallInstruction::CallInit {
+            caller,
             callee,
-            pcm16,
-            description,
-        } => callInitPDA(program_id, accounts, callee, &pcm16, description),
+            pda_address,
+            length,
+        } => callInitPDA(program_id, accounts, caller, callee, pda_address, length),
 
-        instruction::CallInstruction::CallUpdate {
-            callee,
-            pcm16,
-            description,
-        } => callUpdate(program_id, accounts, callee, &pcm16, description),
+        instruction::CallInstruction::CallUpdate { id, callee, pcm16 } => {
+            callUpdate(program_id, accounts, id, callee, &pcm16)
+        }
 
         instruction::CallInstruction::CallSend {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
+        } => callSend(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallAnswer {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
+        } => callAnswer(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallReject {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
+        } => callReject(program_id, accounts, callee, &pcm16, description),
 
         instruction::CallInstruction::CallCancel {
             callee,
             pcm16,
             description,
-        } => streamPcm16(program_id, accounts, callee, &pcm16, description),
+        } => callCancel(program_id, accounts, callee, &pcm16, description),
     }
 }
 
 pub fn callInitPDA(
     pID: &Pubkey,
     _accounts: &[AccountInfo],
+    caller: String,
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    pda_address: String,
+    length: u16,
 ) -> ProgramResult {
-    msg!("Call Started");
+    msg!("callInitPDA");
     msg!("Contact is : {}", callee);
     msg!("Description: {}", description);
     // Get Account iterator
@@ -145,6 +145,70 @@ pub fn streamPcm16(
 }
 
 pub fn callUpdate(
+    _program_id: &Pubkey,
+    _accounts: &[AccountInfo],
+    id: String,
+    callee: String,
+    pcm16: &[u16],
+) -> ProgramResult {
+    msg!("Call Started");
+    msg!("Contact is : {}", callee);
+    Ok(())
+}
+
+pub fn callSend(
+    _program_id: &Pubkey,
+    _accounts: &[AccountInfo],
+    callee: String,
+    pcm16: &[u16],
+    description: String,
+) -> ProgramResult {
+    msg!("Call Started");
+    msg!("Contact is : {}", callee);
+    msg!("Description: {}", description);
+    Ok(())
+}
+
+pub fn callAnswer(
+    _program_id: &Pubkey,
+    _accounts: &[AccountInfo],
+    callee: String,
+    pcm16: &[u16],
+    description: String,
+) -> ProgramResult {
+    msg!("Call Started");
+    msg!("Contact is : {}", callee);
+    msg!("Description: {}", description);
+    Ok(())
+}
+
+pub fn callReject(
+    _program_id: &Pubkey,
+    _accounts: &[AccountInfo],
+    callee: String,
+    pcm16: &[u16],
+    description: String,
+) -> ProgramResult {
+    msg!("Call Started");
+    msg!("Contact is : {}", callee);
+    msg!("Description: {}", description);
+    Ok(())
+}
+
+pub fn callCancel(
+    _program_id: &Pubkey,
+    _accounts: &[AccountInfo],
+    callee: String,
+    pcm16: &[u16],
+    description: String,
+) -> ProgramResult {
+    msg!("Call Started");
+    msg!("Contact is : {}", callee);
+    msg!("Description: {}", description);
+    Ok(())
+}
+
+pub fn eventRise(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
