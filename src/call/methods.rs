@@ -76,19 +76,6 @@ pub fn callInitPDA(
     Ok(())
 }
 
-pub fn streamPcm16(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
-) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
-    Ok(())
-}
-
 pub fn callUpdate(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
