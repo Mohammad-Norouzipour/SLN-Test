@@ -11,35 +11,36 @@ pub enum CallInstruction {
     },
 
     CallUpdate {
-        id: String,
+        session: String,
         callee: String,
+        start-index: u8,
+        end-index: u8,
         pcm16: [u16; 8000],
     },
 
     CallSend {
+        session: String,
         caller: String,
         callee: String,
     },
 
     CallAnswer {
-        id: String,
+        session: String,
         caller: String,
-        callee: String,
     },
 
     CallReject {
-        id: String,
+        session: String,
         callee: String,
     },
 
     CallEnd {
-        id: String,
+        session: String,
     },
 
     CallCancel {
-        id: String,
-        pcm16: [u16; 8000],
-        description: String,
+        session: String,
+        callee: String,
     },
 }
 
