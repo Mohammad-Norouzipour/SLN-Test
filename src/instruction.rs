@@ -13,8 +13,8 @@ pub enum CallInstruction {
     CallUpdate {
         session: String,
         callee: String,
-        start-index: u8,
-        end-index: u8,
+        start_index: u8,
+        end_index: u8,
         pcm16: [u16; 8000],
     },
 
