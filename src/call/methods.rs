@@ -10,6 +10,8 @@ use solana_program::{
     sysvar::Sysvar,
 };
 
+use crate::call::
+
 pub fn callInitPDA(
     pID: &Pubkey,
     _accounts: &[AccountInfo],
@@ -23,12 +25,12 @@ pub fn callInitPDA(
     // Get Account iterator
     let account_info_iter = &mut _accounts.iter();
     // Get accounts
-    let initializer = next_account_info(account_info_iter)?;
+    let payer = next_account_info(account_info_iter)?;
     let pda_account = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?;
     // Derive PDA
     let (pda, bump_seed) =
-        Pubkey::find_program_address(&[initializer.key.as_ref(), callee.as_bytes().as_ref()], pID);
+        Pubkey::find_program_address(&[payer.key.as_ref(), callee.as_bytes().as_ref()], pID);
 
     // Calculate account size required
     let account_len: usize = 1 + (2 * length) + (4 + callee.len()) + (4 + caller.len());
@@ -40,19 +42,19 @@ pub fn callInitPDA(
     // Create the account
     invoke_signed(
         &system_instruction::create_account(
-            initializer.key,
+            payer.key,
             pda_account.key,
             rent_lamports,
             account_len.try_into().unwrap(),
             pID,
         ),
         &[
-            initializer.clone(),
+            payer.clone(),
             pda_account.clone(),
             system_program.clone(),
         ],
         &[&[
-            initializer.key.as_ref(),
+            payer.key.as_ref(),
             callee.as_bytes().as_ref(),
             &[bump_seed],
         ]],
