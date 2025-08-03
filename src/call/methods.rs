@@ -10,7 +10,9 @@ use solana_program::{
     sysvar::Sysvar,
 };
 
-use crate::call::
+use crate::state::{
+CallAccount,
+};
 
 pub fn callInitPDA(
     pID: &Pubkey,
