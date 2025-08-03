@@ -66,8 +66,8 @@ pub fn callInitPDA(
 
     pda_data.caller = callee;
     pda_data.callee = callee;
-    pda_data.pcm16 = pcm16.clone();
-    pda_data.state = description;
+    pda_data.pcm16 = [u16 ; 8000];
+    pda_data.state = state;
     pda_data.is_initialized = true;
 
     msg!("Serializing account");
@@ -92,12 +92,11 @@ pub fn callSend(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    caller: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Request Sent to ",callee);
+    //Set State to Requested
+    //Rise Event Call Sent
     Ok(())
 }
 
@@ -105,50 +104,32 @@ pub fn callAnswer(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    caller: String,
+    callID: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Answered");
+    //Rise Call Answered Event
     Ok(())
 }
 
 pub fn callReject(
-    _program_id: &Pubkey,
+    pId: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    callID: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Rejected");
+    //Rise Call Rejected Event
     Ok(())
 }
 
 pub fn callCancel(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
+    canceler: String,
+    callId: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
-    Ok(())
-}
-
-pub fn eventRise(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
-) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Canceled");
+    msg!(canceler ," Have Canceled Call ID is ", callId);
     Ok(())
 }
