@@ -1,5 +1,6 @@
 pub mod events;
-pub use events::CallEvents;
+pub mod methods2;
 
-pub mod methods;
-pub use methods::*;
+pub fn do_something_in_sub_one() {
+    println!("Doing something in sub_module_one!");
+}

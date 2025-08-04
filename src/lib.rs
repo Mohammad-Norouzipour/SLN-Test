@@ -3,9 +3,7 @@ pub mod instruction;
 pub mod state;
 
 use borsh::{BorshDeserialize, BorshSerialize};
-use call::*;
-use crate::instruction::*;
-use crate::state::*;
+
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
@@ -32,39 +30,42 @@ pub fn process_instruction(
             callee,
             pda_address,
             length,
-        } => callInitPDA(program_id, accounts, caller, callee, pda_address, length),
-
-        instruction::CallInstruction::CallUpdate { id, callee, pcm16 } => {
-            callUpdate(program_id, accounts, id, callee, &pcm16)
+        } => {
+            call::methods::call_init_pda(program_id, accounts, caller, callee, pda_address, length)
         }
 
+        instruction::CallInstruction::CallUpdate {
+            session,
+            callee,
+            start_index,
+            end_index,
+            pcm16,
+        } => call::methods::call_update(program_id, accounts, id, callee, &pcm16),
+
         instruction::CallInstruction::CallSend {
+            session,
+            caller,
             callee,
-            pcm16,
-            description,
-        } => callSend(program_id, accounts, callee, &pcm16, description),
+        } => call::methods::call_send(program_id, accounts, callee, &pcm16, description),
 
-        instruction::CallInstruction::CallAnswer {
-            callee,
-            pcm16,
-            description,
-        } => callAnswer(program_id, accounts, callee, &pcm16, description),
+        instruction::CallInstruction::CallAnswer { session, caller } => {
+            call::methods::call_answer(program_id, accounts, callee, &pcm16, description)
+        }
 
-        instruction::CallInstruction::CallReject {
-            callee,
-            pcm16,
-            description,
-        } => callReject(program_id, accounts, callee, &pcm16, description),
+        instruction::CallInstruction::CallReject { session, callee } => {
+            callReject(program_id, accounts, callee, &pcm16, description)
+        }
 
-        instruction::CallInstruction::CallCancel {
-            callee,
-            pcm16,
-            description,
-        } => callCancel(program_id, accounts, callee, &pcm16, description),
+        instruction::CallInstruction::CallEnd { session } => {
+            callCancel(program_id, accounts, callee, &pcm16, description)
+        }
+
+        instruction::CallInstruction::CallCancel { session, callee } => {
+            callCancel(program_id, accounts, callee, &pcm16, description)
+        }
     }
 }
-
-pub fn callInitPDA(
+/*pub fn callInitPDA(
     pID: &Pubkey,
     _accounts: &[AccountInfo],
     caller: String,
@@ -74,7 +75,6 @@ pub fn callInitPDA(
 ) -> ProgramResult {
     msg!("callInitPDA");
     msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
     // Get Account iterator
     let account_info_iter = &mut _accounts.iter();
     // Get accounts
@@ -128,19 +128,6 @@ pub fn callInitPDA(
     msg!("Serializing account");
     pda_data.serialize(&mut &mut pda_account.data.borrow_mut()[..])?;
     msg!("State account serialized");
-    Ok(())
-}
-
-pub fn streamPcm16(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
-) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
     Ok(())
 }
 
@@ -207,16 +194,4 @@ pub fn callCancel(
     msg!("Description: {}", description);
     Ok(())
 }
-
-pub fn eventRise(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
-) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
-    Ok(())
-}
+*/

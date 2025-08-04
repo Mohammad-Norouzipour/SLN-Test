@@ -1,7 +1,5 @@
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
-    entrypoint,
-    entrypoint::ProgramResult,
     msg,
     program::invoke_signed,
     pubkey::Pubkey,
@@ -10,8 +8,8 @@ use solana_program::{
     sysvar::Sysvar,
 };
 
-pub fn callInitPDA(
-    pID: &Pubkey,
+pub fn call_init_pda(
+    pid: &Pubkey,
     _accounts: &[AccountInfo],
     caller: String,
     callee: String,
@@ -20,19 +18,18 @@ pub fn callInitPDA(
 ) -> ProgramResult {
     msg!("callInitPDA");
     msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
     // Get Account iterator
     let account_info_iter = &mut _accounts.iter();
     // Get accounts
-    let initializer = next_account_info(account_info_iter)?;
+    let payer = next_account_info(account_info_iter)?;
     let pda_account = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?;
     // Derive PDA
     let (pda, bump_seed) =
-        Pubkey::find_program_address(&[initializer.key.as_ref(), callee.as_bytes().as_ref()], pID);
+        Pubkey::find_program_address(&[payer.key.as_ref(), callee.as_bytes().as_ref()], pID);
 
     // Calculate account size required
-    let account_len: usize = 1 + (2 * pcm16.len()) + (4 + callee.len()) + (4 + description.len());
+    let account_len: usize = 1 + (2 * length) + (4 + callee.len()) + (4 + caller.len());
 
     // Calculate rent required
     let rent = Rent::get()?;
@@ -41,22 +38,14 @@ pub fn callInitPDA(
     // Create the account
     invoke_signed(
         &system_instruction::create_account(
-            initializer.key,
+            payer.key,
             pda_account.key,
             rent_lamports,
             account_len.try_into().unwrap(),
-            pID,
+            pid,
         ),
-        &[
-            initializer.clone(),
-            pda_account.clone(),
-            system_program.clone(),
-        ],
-        &[&[
-            initializer.key.as_ref(),
-            callee.as_bytes().as_ref(),
-            &[bump_seed],
-        ]],
+        &[payer.clone(), pda_account.clone(), system_program.clone()],
+        &[&[payer.key.as_ref(), callee.as_bytes().as_ref(), &[bump_seed]]],
     )?;
 
     msg!("Call PDA created: {}", pda);
@@ -67,8 +56,8 @@ pub fn callInitPDA(
 
     pda_data.caller = callee;
     pda_data.callee = callee;
-    pda_data.pcm16 = pcm16.clone();
-    pda_data.state = description;
+    pda_data.pcm16 = [u16; 8000];
+    pda_data.state = state;
     pda_data.is_initialized = true;
 
     msg!("Serializing account");
@@ -77,20 +66,7 @@ pub fn callInitPDA(
     Ok(())
 }
 
-pub fn streamPcm16(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
-) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
-    Ok(())
-}
-
-pub fn callUpdate(
+pub fn call_update(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     id: String,
@@ -102,67 +78,53 @@ pub fn callUpdate(
     Ok(())
 }
 
-pub fn callSend(
+pub fn call_send(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    caller: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Request Sent to ", callee);
+    //Set State to Requested
+    //Rise Event Call Sent
     Ok(())
 }
 
-pub fn callAnswer(
+pub fn call_answer(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    caller: String,
+    callID: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Answered");
+    //Rise Call Answered Event
     Ok(())
 }
 
-pub fn callReject(
-    _program_id: &Pubkey,
+pub fn call_reject(
+    pId: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    pcm16: &[u16],
-    description: String,
+    callID: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Rejected");
+    //Rise Call Rejected Event
     Ok(())
 }
 
-pub fn callCancel(
+pub fn call_cancel(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
+    canceler: String,
+    callId: String,
 ) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+    msg!("Call Canceled");
+    msg!(canceler, " Have Canceled Call ID is ", callId);
     Ok(())
 }
 
-pub fn eventRise(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
-    callee: String,
-    pcm16: &[u16],
-    description: String,
-) -> ProgramResult {
-    msg!("Call Started");
-    msg!("Contact is : {}", callee);
-    msg!("Description: {}", description);
+pub fn event_rise(_program_id: &Pubkey, _accounts: &[AccountInfo]) -> ProgramResult {
+    msg!("Some Event Rised");
     Ok(())
 }
