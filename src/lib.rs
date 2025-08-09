@@ -46,7 +46,7 @@ pub fn process_instruction(
         }
 
         instruction::CallInstruction::CallReject { session, callee } => {
-            call:: methods::call_reject(program_id, accounts, session, callee)
+            call::methods::call_reject(program_id, accounts, session, callee)
         }
 
         instruction::CallInstruction::CallEnd { session } => {
