@@ -54,7 +54,7 @@ pub fn process_instruction(
         }
 
         instruction::CallInstruction::CallCancel { session, callee } => {
-            call::methods::call_cancel(program_id, accounts, callee)
+            call::methods::call_cancel(program_id, accounts,session, callee)
         }
     }
 }
