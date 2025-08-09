@@ -90,7 +90,7 @@ pub fn call_send(
     callee: String,
     caller: String,
 ) -> ProgramResult {
-    msg!("Call Request Sent to ", callee);
+    msg!("Call Request Sent to {} ", callee);
     //Set State to Requested
     //Rise Event Call Sent
     Ok(())
@@ -126,13 +126,13 @@ pub fn call_cancel(
     session: String,
 ) -> ProgramResult {
     msg!("Call Canceled");
-    msg!(canceler, " Have Canceled Call ID is ", session);
+    msg!("{} {} {} ",canceler, " Have Canceled Call ID is ", session);
     Ok(())
 }
 
 pub fn call_end(_program_id: &Pubkey, _accounts: &[AccountInfo], session: String) -> ProgramResult {
-    msg!("Call Canceled");
-    msg!(" Have Ended Call ID is ", session);
+    msg!("Call Ended");
+    msg!(" Have Ended Call ID is {}", session);
     Ok(())
 }
 
