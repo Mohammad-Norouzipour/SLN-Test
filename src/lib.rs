@@ -41,8 +41,8 @@ pub fn process_instruction(
             callee,
         } => call::methods::call_send(program_id, accounts, callee, caller),
 
-        instruction::CallInstruction::CallAnswer { session, caller } => {
-            call::methods::call_answer(program_id, accounts, session, caller)
+        instruction::CallInstruction::CallAnswer { session, caller , callee } => {
+            call::methods::call_answer(program_id, accounts,callee,caller, session)
         }
 
         instruction::CallInstruction::CallReject { session, callee } => {
