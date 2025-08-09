@@ -33,7 +33,7 @@ pub fn process_instruction(
             start_index,
             end_index,
             pcm16,
-        } => call::methods::call_update(program_id, accounts, id, callee, pcm16),
+        } => call::methods::call_update(program_id, accounts, session, callee, pcm16),
 
         instruction::CallInstruction::CallSend {
             session,
