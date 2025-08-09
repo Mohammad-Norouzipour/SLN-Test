@@ -63,7 +63,7 @@ pub fn call_init_pda(
     pda_data.callee = callee;
     pda_data.pcm16 = (pda_data.pcm16 + 1).clone();
     pda_data.state = pda_data.state;
-    pda_data.session = "Calling";
+    pda_data.session = "Calling".to_string();
     pda_data.is_initialized = true;
 
     msg!("Serializing account");
