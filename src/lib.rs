@@ -2,18 +2,11 @@ mod call;
 mod instruction;
 mod state;
 
-use borsh::{BorshDeserialize, BorshSerialize};
-
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
     entrypoint::ProgramResult,
-    msg,
-    program::invoke_signed,
     pubkey::Pubkey,
-    rent::Rent,
-    system_instruction,
-    sysvar::Sysvar,
 };
 
 entrypoint!(process_instruction);
