@@ -1,5 +1,7 @@
+use crate::state::CallAccount;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
+    entrypoint::ProgramResult,
     msg,
     program::invoke_signed,
     pubkey::Pubkey,
@@ -26,7 +28,7 @@ pub fn call_init_pda(
     let system_program = next_account_info(account_info_iter)?;
     // Derive PDA
     let (pda, bump_seed) =
-        Pubkey::find_program_address(&[payer.key.as_ref(), callee.as_bytes().as_ref()], pID);
+        Pubkey::find_program_address(&[payer.key.as_ref(), callee.as_bytes().as_ref()], pid);
 
     // Calculate account size required
     let account_len: usize = 1 + (2 * length) + (4 + callee.len()) + (4 + caller.len());
@@ -56,8 +58,9 @@ pub fn call_init_pda(
 
     pda_data.caller = callee;
     pda_data.callee = callee;
-    pda_data.pcm16 = [u16; 8000];
-    pda_data.state = state;
+    pda_data.pcm16 = (pda_data.pcm16 + 1).clone();
+    pda_data.state = pda_data.state;
+    pda_data.session = "Calling";
     pda_data.is_initialized = true;
 
     msg!("Serializing account");
@@ -69,11 +72,11 @@ pub fn call_init_pda(
 pub fn call_update(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
-    id: String,
+    session: String,
     callee: String,
-    pcm16: &[u16],
+    pcm16: u16,
 ) -> ProgramResult {
-    msg!("Call Started");
+    msg!("Call Updated");
     msg!("Contact is : {}", callee);
     Ok(())
 }
@@ -95,7 +98,7 @@ pub fn call_answer(
     _accounts: &[AccountInfo],
     callee: String,
     caller: String,
-    callID: String,
+    session: String,
 ) -> ProgramResult {
     msg!("Call Answered");
     //Rise Call Answered Event
@@ -103,10 +106,10 @@ pub fn call_answer(
 }
 
 pub fn call_reject(
-    pId: &Pubkey,
+    pid: &Pubkey,
     _accounts: &[AccountInfo],
     callee: String,
-    callID: String,
+    session: String,
 ) -> ProgramResult {
     msg!("Call Rejected");
     //Rise Call Rejected Event
@@ -117,10 +120,16 @@ pub fn call_cancel(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     canceler: String,
-    callId: String,
+    session: String,
 ) -> ProgramResult {
     msg!("Call Canceled");
-    msg!(canceler, " Have Canceled Call ID is ", callId);
+    msg!(canceler, " Have Canceled Call ID is ", session);
+    Ok(())
+}
+
+pub fn call_end(_program_id: &Pubkey, _accounts: &[AccountInfo], session: String) -> ProgramResult {
+    msg!("Call Canceled");
+    msg!(" Have Ended Call ID is ", session);
     Ok(())
 }
 

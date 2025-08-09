@@ -15,7 +15,7 @@ pub enum CallInstruction {
         callee: String,
         start_index: u8,
         end_index: u8,
-        pcm16: [u16; 8000],
+        pcm16: u16,
     },
 
     CallSend {
