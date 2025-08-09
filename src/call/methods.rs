@@ -59,7 +59,7 @@ pub fn call_init_pda(
     let mut pda_data =
         CallAccount::try_from_slice(&pda_account.data.borrow()).unwrap_or(CallAccount::default());
 
-    pda_data.caller = callee;
+    pda_data.caller = caller;
     pda_data.callee = callee;
     pda_data.pcm16 = (pda_data.pcm16 + 1).clone();
     pda_data.state = pda_data.state;
