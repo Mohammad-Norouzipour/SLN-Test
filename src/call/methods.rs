@@ -34,7 +34,7 @@ pub fn call_init_pda(
         Pubkey::find_program_address(&[payer.key.as_ref(), callee.as_bytes().as_ref()], pid);
 
     // Calculate account size required
-    let account_len: usize = 1 + (2 * length) as uzise + (4 + callee.len()) as uzise + (4 + caller.len()) as usize;
+    let account_len: usize = 1 + (2 * length) as usize + (4 + callee.len()) as usize + (4 + caller.len()) as usize;
 
     // Calculate rent required
     let rent = Rent::get()?;
