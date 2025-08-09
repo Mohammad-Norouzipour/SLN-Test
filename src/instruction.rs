@@ -27,7 +27,7 @@ pub enum CallInstruction {
     CallAnswer {
         session: String,
         caller: String,
-        called: String,
+        callee: String,
     },
 
     CallReject {
